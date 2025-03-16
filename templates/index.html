@@ -3,18 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Frontend</title>
-    <!-- Link to your CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Hotel Booking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <h1>Welcome to Flask!</h1>
-    <p>This is a simple Flask app with raw HTML, CSS, and JavaScript.</p>
+<body class="bg-gray-50 font-sans">
+    <!-- Header & Navigation -->
+    <header class="bg-indigo-900 text-white shadow-md fixed w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold">Hotel Booking System</a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="/" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-home mr-2"></i> Home</a></li>
+                    <li><a href="/search" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-search mr-2"></i> Search</a></li>
+                    <li><a href="/bookings" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-bookmark mr-2"></i> My Bookings</a></li>
+                    <li><a href="/login" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-user-tie mr-2"></i> Employee Login</a></li>
+                </ul>
+            </nav>
+            <!-- Mobile menu button -->
+            <button class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile menu (hidden by default) -->
+        <div class="md:hidden hidden">
+            <ul class="bg-indigo-800 px-4 py-2">
+                <li class="py-2"><a href="/" class="block"><i class="fas fa-home mr-2"></i> Home</a></li>
+                <li class="py-2"><a href="/search" class="block"><i class="fas fa-search mr-2"></i> Search</a></li>
+                <li class="py-2"><a href="/bookings" class="block"><i class="fas fa-bookmark mr-2"></i> My Bookings</a></li>
+                <li class="py-2"><a href="/login" class="block"><i class="fas fa-user-tie mr-2"></i> Employee Login</a></li>
+            </ul>
+        </div>
+    </header>
 
-    <!-- Example button with JavaScript interaction -->
-    <button id="clickMe">Click Me</button>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 bg-gradient-to-r from-blue-900 to-indigo-800 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Find Your Perfect Stay</h1>
+            <p class="text-xl mb-8">Book rooms at any of our five hotel chains across North America</p>
+        </div>
+    </section>
 
-    <!-- Link to your JavaScript file -->
+    <!-- Search Form -->
+    <div class="container mx-auto px-4 -mt-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-12">
+            <form class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2" for="destination">
+                            <i class="fas fa-map-marker-alt mr-2"></i>Destination
+                        </label>
+                        <input type="text" id="destination" placeholder="City, State or Area" 
+                               class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2" for="check-in">
+                            <i class="fas fa-calendar-alt mr-2"></i>Check-in
+                        </label>
+                        <input type="date" id="check-in" 
+                               class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2" for="check-out">
+                            <i class="fas fa-calendar-alt mr-2"></i>Check-out
+                        </label>
+                        <input type="date" id="check-out" 
+                               class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2" for="guests">
+                            <i class="fas fa-user-friends mr-2"></i>Guests
+                        </label>
+                        <select id="guests" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="1">1 Guest</option>
+                            <option value="2" selected>2 Guests</option>
+                            <option value="3">3 Guests</option>
+                            <option value="4">4 Guests</option>
+                            <option value="5">5+ Guests</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-md font-medium transition">
+                    <i class="fas fa-search mr-2"></i>Search Available Rooms
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hotel Chains Section -->
+    <section class="container mx-auto px-4 py-8" id="hotel-chains">
+        <h2 class="text-3xl font-bold text-center mb-10 text-gray-800">Our Hotel Chains</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="hotel-chains-container">
+            <!-- Hotel chains will be loaded here via JavaScript -->
+            <!-- Placeholder cards -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,luxury" alt="Luxury Hotel" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Luxury Resort Collection</h3>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-hotel mr-2 text-indigo-600"></i>12 Hotels</p>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>Multiple Locations</p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Hotels
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,business" alt="Business Hotel" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Business Traveler Suites</h3>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-hotel mr-2 text-indigo-600"></i>28 Hotels</p>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>Major Urban Centers</p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Hotels
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,family" alt="Family Hotel" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Family Vacation Resorts</h3>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-hotel mr-2 text-indigo-600"></i>15 Hotels</p>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>Family-Friendly Destinations</p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Hotels
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Rooms Section -->
+    <section class="container mx-auto px-4 py-8 bg-gray-50" id="featured-rooms">
+        <h2 class="text-3xl font-bold text-center mb-10 text-gray-800">Featured Rooms</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="featured-rooms-container">
+            <!-- Featured rooms will be loaded here via JavaScript -->
+            <!-- Placeholder cards -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,room,luxury" alt="Luxury Room" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">2 Adults, 2 Children</span>
+                    <h3 class="text-xl font-bold mt-2 mb-2">Deluxe Ocean View Suite</h3>
+                    <p class="text-gray-700 mb-2"><i class="fas fa-building mr-2 text-indigo-600"></i>Beachside Paradise Resort</p>
+                    <div class="flex flex-wrap mb-4">
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Ocean View</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>King Bed</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>WiFi</span>
+                    </div>
+                    <p class="text-2xl font-bold text-indigo-600 mb-4">$299 <span class="text-sm font-normal text-gray-500">per night</span></p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Details
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,room,business" alt="Business Room" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">1 Adult</span>
+                    <h3 class="text-xl font-bold mt-2 mb-2">Executive Business Room</h3>
+                    <p class="text-gray-700 mb-2"><i class="fas fa-building mr-2 text-indigo-600"></i>Downtown Business Hotel</p>
+                    <div class="flex flex-wrap mb-4">
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Work Desk</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Fast WiFi</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Coffee Maker</span>
+                    </div>
+                    <p class="text-2xl font-bold text-indigo-600 mb-4">$189 <span class="text-sm font-normal text-gray-500">per night</span></p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 border-b border-indigo-700 pb-2">Contact Us</h3>
+                    <p class="mb-2"><i class="fas fa-envelope mr-2"></i>info@hotelbook.com</p>
+                    <p><i class="fas fa-phone mr-2"></i>(123) 456-7890</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 border-b border-indigo-700 pb-2">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-indigo-300 transition">About Us</a></li>
+                        <li><a href="#" class="hover:text-indigo-300 transition">FAQ</a></li>
+                        <li><a href="#" class="hover:text-indigo-300 transition">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 border-b border-indigo-700 pb-2">Follow Us</h3>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="bg-indigo-800 hover:bg-indigo-700 h-10 w-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="bg-indigo-800 hover:bg-indigo-700 h-10 w-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="bg-indigo-800 hover:bg-indigo-700 h-10 w-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center border-t border-indigo-800 pt-6">
+                <p>&copy; 2025 Hotel Booking System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
