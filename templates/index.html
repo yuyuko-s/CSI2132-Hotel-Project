@@ -3,18 +3,603 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Frontend</title>
-    <!-- Link to your CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Hotel Booking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
+    <style>
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating { animation: float 3s ease-in-out infinite; }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(45deg, #4F46E5, #818CF8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Glass effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
 </head>
-<body>
-    <h1>Welcome to Flask!</h1>
-    <p>This is a simple Flask app with raw HTML, CSS, and JavaScript.</p>
+<body class="bg-gray-50 font-sans">
+    <!-- Header & Navigation -->
+    <header class="bg-indigo-900 text-white shadow-md fixed w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold">Hotel Booking System</a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="/" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-home mr-2"></i> Home</a></li>
+                    <li><a href="/search" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-search mr-2"></i> Search</a></li>
+                    <li><a href="/bookings" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-bookmark mr-2"></i> My Bookings</a></li>
+                    <li><a href="/login" class="flex items-center hover:text-indigo-300 transition"><i class="fas fa-user-tie mr-2"></i> Employee Login</a></li>
+                </ul>
+            </nav>
+            <!-- Mobile menu button -->
+            <button class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile menu (hidden by default) -->
+        <div class="md:hidden hidden">
+            <ul class="bg-indigo-800 px-4 py-2">
+                <li class="py-2"><a href="/" class="block"><i class="fas fa-home mr-2"></i> Home</a></li>
+                <li class="py-2"><a href="/search" class="block"><i class="fas fa-search mr-2"></i> Search</a></li>
+                <li class="py-2"><a href="/bookings" class="block"><i class="fas fa-bookmark mr-2"></i> My Bookings</a></li>
+                <li class="py-2"><a href="/login" class="block"><i class="fas fa-user-tie mr-2"></i> Employee Login</a></li>
+            </ul>
+        </div>
+    </header>
 
-    <!-- Example button with JavaScript interaction -->
-    <button id="clickMe">Click Me</button>
+    <!-- Hero Section -->
+    <section class="min-h-screen relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-black">
+        <!-- Animated background elements -->
+        <div class="absolute inset-0">
+            <div class="absolute w-96 h-96 bg-purple-500 rounded-full filter blur-3xl opacity-20 -top-10 -left-10 animate-pulse"></div>
+            <div class="absolute w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-20 top-1/2 right-0 animate-pulse delay-1000"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 pt-32 pb-20 relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div data-aos="fade-right">
+                    <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                        Discover <span class="gradient-text">Luxury</span> in Every Stay
+                    </h1>
+                    <p class="text-xl text-gray-300 mb-8">Experience world-class hospitality across our premium hotel chains</p>
+                    <div class="flex space-x-4">
+                        <a href="#featured-rooms" class="px-8 py-4 bg-white text-indigo-900 rounded-full font-bold hover:transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
+                            Browse Rooms
+                        </a>
+                        <a href="#" class="px-8 py-4 glass-effect text-white rounded-full font-bold hover:transform hover:scale-105 transition-all">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="relative" data-aos="fade-left">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
+                         class="rounded-2xl shadow-2xl floating" alt="Luxury Hotel Room">
+                    <!-- Stats overlay -->
+                    <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 glass-effect rounded-xl p-6 w-4/5">
+                        <div class="grid grid-cols-3 gap-4 text-center text-white">
+                            <div>
+                                <div class="text-3xl font-bold">500+</div>
+                                <div class="text-sm">Rooms</div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold">5⭐</div>
+                                <div class="text-sm">Rating</div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold">24/7</div>
+                                <div class="text-sm">Service</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- Link to your JavaScript file -->
+    <!-- Search Form -->
+    <div class="container mx-auto px-4 -mt-20">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 mb-12 transform hover:shadow-3xl transition-all duration-300" data-aos="fade-up">
+            <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="group">
+                        <label class="block text-gray-700 mb-2 font-semibold">
+                            <i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>Destination
+                        </label>
+                        <div class="relative">
+                            <input type="text" placeholder="Where are you going?" 
+                                   class="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all pl-12">
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2" for="check-in">
+                            <i class="fas fa-calendar-alt mr-2"></i>Check-in
+                        </label>
+                        <input type="date" id="check-in" 
+                               class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2" for="check-out">
+                            <i class="fas fa-calendar-alt mr-2"></i>Check-out
+                        </label>
+                        <input type="date" id="check-out" 
+                               class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2" for="guests">
+                            <i class="fas fa-user-friends mr-2"></i>Guests
+                        </label>
+                        <select id="guests" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="1">1 Guest</option>
+                            <option value="2" selected>2 Guests</option>
+                            <option value="3">3 Guests</option>
+                            <option value="4">4 Guests</option>
+                            <option value="5">5+ Guests</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 px-6 rounded-xl font-medium transition-all transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">
+                    <i class="fas fa-search"></i>
+                    <span>Find Your Perfect Room</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hotel Chains Section -->
+    <section class="container mx-auto px-4 py-8" id="hotel-chains">
+        <h2 class="text-3xl font-bold text-center mb-10 text-gray-800">Our Hotel Chains</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="hotel-chains-container">
+            <!-- Hotel chains will be loaded here via JavaScript -->
+            <!-- Placeholder cards -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,luxury" alt="Luxury Hotel" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Luxury Resort Collection</h3>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-hotel mr-2 text-indigo-600"></i>12 Hotels</p>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>Multiple Locations</p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Hotels
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,business" alt="Business Hotel" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Business Traveler Suites</h3>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-hotel mr-2 text-indigo-600"></i>28 Hotels</p>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>Major Urban Centers</p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Hotels
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,family" alt="Family Hotel" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Family Vacation Resorts</h3>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-hotel mr-2 text-indigo-600"></i>15 Hotels</p>
+                    <p class="text-gray-700 mb-4"><i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>Family-Friendly Destinations</p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Hotels
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Rooms Section -->
+    <section class="container mx-auto px-4 py-8 bg-gray-50" id="featured-rooms">
+        <h2 class="text-3xl font-bold text-center mb-10 text-gray-800">Featured Rooms</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="featured-rooms-container">
+            <!-- Featured rooms will be loaded here via JavaScript -->
+            <!-- Placeholder cards -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,room,luxury" alt="Luxury Room" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">2 Adults, 2 Children</span>
+                    <h3 class="text-xl font-bold mt-2 mb-2">Deluxe Ocean View Suite</h3>
+                    <p class="text-gray-700 mb-2"><i class="fas fa-building mr-2 text-indigo-600"></i>Beachside Paradise Resort</p>
+                    <div class="flex flex-wrap mb-4">
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Ocean View</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>King Bed</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>WiFi</span>
+                    </div>
+                    <p class="text-2xl font-bold text-indigo-600 mb-4">$299 <span class="text-sm font-normal text-gray-500">per night</span></p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Details
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="https://source.unsplash.com/random/300x200/?hotel,room,business" alt="Business Room" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">1 Adult</span>
+                    <h3 class="text-xl font-bold mt-2 mb-2">Executive Business Room</h3>
+                    <p class="text-gray-700 mb-2"><i class="fas fa-building mr-2 text-indigo-600"></i>Downtown Business Hotel</p>
+                    <div class="flex flex-wrap mb-4">
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Work Desk</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Fast WiFi</span>
+                        <span class="mr-2 mb-2 text-sm text-gray-600"><i class="fas fa-check text-green-500 mr-1"></i>Coffee Maker</span>
+                    </div>
+                    <p class="text-2xl font-bold text-indigo-600 mb-4">$189 <span class="text-sm font-normal text-gray-500">per night</span></p>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-4 gradient-text">Why Choose Us</h2>
+                <p class="text-xl text-gray-600">Experience the difference with our premium amenities</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-concierge-bell text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">24/7 Concierge</h3>
+                    <p class="text-gray-600">Round-the-clock service to meet your every need</p>
+                </div>
+                <!-- Add more feature cards -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-4 gradient-text">What Our Guests Say</h2>
+                <p class="text-xl text-gray-600">Real experiences from our valued customers</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center mb-6">
+                        <img src="https://randomuser.me/api/portraits/women/1.jpg" class="w-12 h-12 rounded-full mr-4" alt="Guest">
+                        <div>
+                            <h4 class="font-bold">Sarah Johnson</h4>
+                            <div class="text-yellow-400">★★★★★</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Absolutely amazing experience! The staff went above and beyond to make our stay memorable."</p>
+                </div>
+                <!-- Add more testimonials -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 border-b border-indigo-700 pb-2">Contact Us</h3>
+                    <p class="mb-2"><i class="fas fa-envelope mr-2"></i>info@hotelbook.com</p>
+                    <p><i class="fas fa-phone mr-2"></i>(123) 456-7890</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 border-b border-indigo-700 pb-2">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-indigo-300 transition">About Us</a></li>
+                        <li><a href="#" class="hover:text-indigo-300 transition">FAQ</a></li>
+                        <li><a href="#" class="hover:text-indigo-300 transition">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 border-b border-indigo-700 pb-2">Follow Us</h3>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="bg-indigo-800 hover:bg-indigo-700 h-10 w-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="bg-indigo-800 hover:bg-indigo-700 h-10 w-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="bg-indigo-800 hover:bg-indigo-700 h-10 w-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center border-t border-indigo-800 pt-6">
+                <p>&copy; 2025 Hotel Booking System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+    </script>
+    <script>
+    // Utility functions
+    const DateTime = luxon.DateTime;
+
+    // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('.md\\:hidden.text-white');
+        const mobileMenu = document.querySelector('.md\\:hidden.hidden');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Search form functionality
+        const searchForm = document.querySelector('form');
+        searchForm.addEventListener('submit', handleSearch);
+
+        // Initialize date inputs with proper constraints
+        setupDateInputs();
+
+        // Initialize room count display
+        updateRoomCount();
+
+        // Setup booking buttons
+        setupBookingButtons();
+    });
+
+    // Search form handling
+    function handleSearch(e) {
+        e.preventDefault();
+        
+        const searchData = {
+            destination: document.getElementById('destination').value,
+            checkIn: document.getElementById('check-in').value,
+            checkOut: document.getElementById('check-out').value,
+            guests: document.getElementById('guests').value
+        };
+
+        // Validate dates
+        if (!validateDates(searchData.checkIn, searchData.checkOut)) {
+            showNotification('Please select valid check-in and check-out dates', 'error');
+            return;
+        }
+
+        // Show loading state
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Searching...';
+        submitButton.disabled = true;
+
+        // Simulate API call (replace with actual API call)
+        setTimeout(() => {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+            
+            // Scroll to results
+            document.getElementById('featured-rooms').scrollIntoView({ behavior: 'smooth' });
+            
+            // Update results (replace with actual API response handling)
+            updateSearchResults(searchData);
+        }, 1500);
+    }
+
+    // Date input setup and validation
+    function setupDateInputs() {
+        const checkIn = document.getElementById('check-in');
+        const checkOut = document.getElementById('check-out');
+        
+        // Set minimum dates
+        const today = DateTime.now().toFormat('yyyy-MM-dd');
+        const tomorrow = DateTime.now().plus({ days: 1 }).toFormat('yyyy-MM-dd');
+        
+        checkIn.min = today;
+        checkOut.min = tomorrow;
+
+        // Update checkout min date when checkin changes
+        checkIn.addEventListener('change', () => {
+            const nextDay = DateTime.fromISO(checkIn.value).plus({ days: 1 }).toFormat('yyyy-MM-dd');
+            checkOut.min = nextDay;
+            if (checkOut.value && checkOut.value <= checkIn.value) {
+                checkOut.value = nextDay;
+            }
+        });
+    }
+
+    function validateDates(checkIn, checkOut) {
+        const checkInDate = DateTime.fromISO(checkIn);
+        const checkOutDate = DateTime.fromISO(checkOut);
+        const today = DateTime.now().startOf('day');
+
+        return checkInDate >= today && checkOutDate > checkInDate;
+    }
+
+    // Room count display
+    function updateRoomCount() {
+        const roomCounters = document.querySelectorAll('.room-counter');
+        roomCounters.forEach(counter => {
+            const count = counter.querySelector('.count');
+            const decrementBtn = counter.querySelector('.decrement');
+            const incrementBtn = counter.querySelector('.increment');
+            
+            decrementBtn.addEventListener('click', () => {
+                const currentValue = parseInt(count.textContent);
+                if (currentValue > 1) {
+                    count.textContent = currentValue - 1;
+                }
+            });
+            
+            incrementBtn.addEventListener('click', () => {
+                const currentValue = parseInt(count.textContent);
+                if (currentValue < 5) {
+                    count.textContent = currentValue + 1;
+                }
+            });
+        });
+    }
+
+    // Booking buttons functionality
+    function setupBookingButtons() {
+        const bookButtons = document.querySelectorAll('.book-room-btn');
+        bookButtons.forEach(button => {
+            button.addEventListener('click', handleBooking);
+        });
+    }
+
+    function handleBooking(e) {
+        const roomCard = e.target.closest('.room-card');
+        const roomName = roomCard.querySelector('h3').textContent;
+        const roomPrice = roomCard.querySelector('.price').textContent;
+
+        // Show booking modal
+        showBookingModal(roomName, roomPrice);
+    }
+
+    // Notification system
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white`;
+        notification.innerHTML = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Booking modal
+    function showBookingModal(roomName, price) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">Book ${roomName}</h3>
+                    <button class="text-gray-500 hover:text-gray-700 close-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-gray-600">Price per night:</p>
+                        <p class="text-2xl font-bold text-indigo-600">${price}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Check-in</label>
+                            <input type="date" class="w-full p-2 border rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Check-out</label>
+                            <input type="date" class="w-full p-2 border rounded-lg" required>
+                        </div>
+                    </div>
+                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg">
+                        Confirm Booking
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Close modal functionality
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Close on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+ 
+        // Handle booking confirmation
+        modal.querySelector('button:last-child').addEventListener('click', () => {
+            // Add booking confirmation logic here
+            showNotification('Booking confirmed successfully!');
+            modal.remove();
+        });
+    }
+
+    // Update search results
+    function updateSearchResults(searchData) {
+        const resultsContainer = document.getElementById('featured-rooms-container');
+        
+        // Show loading state
+        resultsContainer.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-3xl text-indigo-600"></i>
+                <p class="mt-2 text-gray-600">Loading available rooms...</p>
+            </div>
+        `;
+
+        // Simulate API response (replace with actual API call)
+        setTimeout(() => {
+            // Example response data
+            const rooms = [
+                {
+                    name: 'Deluxe Ocean View Suite',
+                    image: 'https://source.unsplash.com/random/300x200/?hotel,room,luxury',
+                    price: 299,
+                    capacity: '2 Adults, 2 Children',
+                    amenities: ['Ocean View', 'King Bed', 'WiFi']
+                },
+                // Add more room data
+            ];
+
+            // Update results
+            displaySearchResults(rooms);
+        }, 1000);
+    }
+
+    function displaySearchResults(rooms) {
+        const resultsContainer = document.getElementById('featured-rooms-container');
+        resultsContainer.innerHTML = rooms.map(room => `
+            <div class="room-card bg-white rounded-lg overflow-hidden shadow-lg transition-transform hover:transform hover:scale-105">
+                <img src="${room.image}" alt="${room.name}" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                        ${room.capacity}
+                    </span>
+                    <h3 class="text-xl font-bold mt-2 mb-2">${room.name}</h3>
+                    <div class="flex flex-wrap mb-4">
+                        ${room.amenities.map(amenity => `
+                            <span class="mr-2 mb-2 text-sm text-gray-600">
+                                <i class="fas fa-check text-green-500 mr-1"></i>${amenity}
+                            </span>
+                        `).join('')}
+                    </div>
+                    <p class="text-2xl font-bold text-indigo-600 mb-4 price">$${room.price} <span class="text-sm font-normal text-gray-500">per night</span></p>
+                    <button class="book-room-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded font-medium transition">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Reinitialize booking buttons
+        setupBookingButtons();
+    }
+    </script>
 </body>
 </html>
