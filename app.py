@@ -26,6 +26,9 @@ app.register_blueprint(employees_bp, url_prefix='/api')
 def hello_world():  # put application's code here
     return render_template("index.html")
 
+@app.route('/admin-dashboard')
+def admin_dashboard():
+    return render_template("admin-dashboard.html")
 
 if __name__ == '__main__':
     app.run()
