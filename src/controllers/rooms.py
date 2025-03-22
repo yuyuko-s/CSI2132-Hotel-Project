@@ -1,5 +1,6 @@
+import sys
 from flask import Blueprint, request, jsonify
-from app import db
+from src.database.database import db
 
 rooms_bp = Blueprint('rooms', __name__)
 
@@ -22,6 +23,7 @@ def create_room():
 # Get all rooms
 @rooms_bp.route('/rooms', methods=['GET'])
 def get_rooms():
+   
     query = "SELECT id, room_number, capacity, price, is_extendable, view_types, amenities, problems, hotel_id FROM Rooms;"
     result = db.engine.execute(query)
     rooms = [dict(row) for row in result]
@@ -58,3 +60,24 @@ def delete_room(id):
     query = "DELETE FROM Rooms WHERE id = %s;"
     db.engine.execute(query, (id,))
     return jsonify({"message": "Room deleted"}), 200
+
+# find all rooms with the right destination, capacity that are not rented. 
+@rooms_bp.route('/rooms/available', methods=['GET'])
+def get_available_rooms():
+ 
+    data = request.get_json()
+    destination = data.get('destination')
+    capacity = data.get('capacity')
+    check_in = data.get('check_in')
+    check_out = data.get('check_out')
+   
+    query = """ 
+        SELECT * FROM Rooms
+        WHERE hotel_id IN (SELECT id FROM Hotels WHERE destination ILIKE %s)
+        AND capacity >= %s AND id NOT IN (SELECT room_id FROM Rentings WHERE check_in_date <= %s AND check_out_date >= %s);
+    """
+    result = db.engine.execute(query, (destination, capacity, check_in, check_out))
+    rooms = [dict(row) for row in result]
+    return jsonify(rooms), 200
+
+    

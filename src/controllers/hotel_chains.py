@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app import db
+from src.database.database import db
 
 hotel_chains_bp = Blueprint('hotel_chains', __name__)
 

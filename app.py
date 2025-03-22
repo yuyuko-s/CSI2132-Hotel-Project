@@ -1,11 +1,13 @@
+
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
+
+from src.database.database import db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'postgresql://admin:admin@localhost/hoteldb'
 
-db = SQLAlchemy(app)
+db.init_app(app)
 
 from src.controllers.customers import customers_bp
 from src.controllers.employees import employees_bp
@@ -13,6 +15,10 @@ from src.controllers.hotel_chains import hotel_chains_bp
 from src.controllers.hotels import hotels_bp
 from src.controllers.rentings import rentings_bp
 from src.controllers.rooms import rooms_bp
+
+
+
+
 
 app.register_blueprint(hotel_chains_bp, url_prefix='/api')
 app.register_blueprint(hotels_bp, url_prefix='/api')
@@ -31,5 +37,5 @@ def admin_dashboard():
     return render_template("admin-dashboard.html")
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
