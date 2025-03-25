@@ -156,3 +156,18 @@ CREATE TABLE IF NOT EXISTS Rentings (
     CONSTRAINT invalid_date
         CHECK (check_in_date < check_out_date)
 );--done
+
+-- View 1: Available rooms per area
+-- I'm using same hotel chain as the area
+CREATE VIEW available_rooms_per_chain AS
+SELECT hc.name AS chain_name, COUNT(r.id) AS num_rooms FROM HotelChains hc
+JOIN Hotels h ON hc.id = h.hotel_chain_id
+JOIN Rooms r ON h.id = r.hotel_id
+GROUP BY hc.id;
+
+-- View 2: Aggregated capacity per hotel
+CREATE VIEW capacity_per_hotel AS
+SELECT h.id AS hotel_id, h.name AS hotel_name, SUM(r.capacity) AS total_capacity
+FROM Hotels h
+JOIN Rooms r ON h.id = r.hotel_id
+GROUP BY h.id;

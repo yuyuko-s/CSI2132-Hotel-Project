@@ -23,6 +23,6 @@ Trigger 1 & 2: Update numofhotels
 - At least 3 indexes
 - Justify how they are useful to accelerate querying
 
-2f: Database Views
+2f: Database Views [ DONE ]
 - View 1: Number of available rooms per area
 - View 2: Aggregated capacity of all the rooms of a hotel
