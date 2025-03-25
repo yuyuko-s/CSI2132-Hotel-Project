@@ -14,7 +14,9 @@ nearly done
 
 2d: Database modifications
 - GET/DEL/PATCH for all data DONE
-- at least 2 triggers
+- at least 2 triggers DONE
+
+Trigger 1 & 2: Update numofhotels
 
 
 2e: Database indexes

@@ -1,11 +1,12 @@
 -- Create HotelChains table
-CREATE TABLE HotelChains (
+CREATE TABLE IF NOT EXISTS HotelChains (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    office_address VARCHAR(200) NOT NULL
+    office_address VARCHAR(200) NOT NULL,
+    num_hotels INTEGER DEFAULT 0
 ); -- done
 
-CREATE TABLE HotelChainContact (
+CREATE TABLE IF NOT EXISTS HotelChainContact (
     id SERIAL PRIMARY KEY,
     hotel_chain_id INT NOT NULL,
     type VARCHAR(20) NOT NULL,
@@ -16,18 +17,8 @@ CREATE TABLE HotelChainContact (
         ON DELETE CASCADE
 ); -- done
 
-CREATE TABLE HotelContact (
-    id SERIAL PRIMARY KEY,
-    hotel_id INT NOT NULL,
-    type VARCHAR(20) NOT NULL,
-    content VARCHAR(100) NOT NULL,
-    CONSTRAINT fk_hotel
-        FOREIGN KEY (hotel_id)
-        REFERENCES Hotels(id)
-        ON DELETE CASCADE
-); -- done
 
-CREATE TABLE Hotels (
+CREATE TABLE IF NOT EXISTS Hotels (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     address VARCHAR(200) NOT NULL,
@@ -39,8 +30,52 @@ CREATE TABLE Hotels (
         ON DELETE CASCADE
 ); -- done
 
+CREATE TABLE IF NOT EXISTS HotelContact (
+    id SERIAL PRIMARY KEY,
+    hotel_id INT NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    content VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_hotel
+        FOREIGN KEY (hotel_id)
+        REFERENCES Hotels(id)
+        ON DELETE CASCADE
+); -- done
 
-CREATE TABLE Rooms (
+
+CREATE OR REPLACE FUNCTION inc_num_hotels()
+   RETURNS TRIGGER AS $BODY$
+    BEGIN
+        UPDATE HotelChains
+        SET num_hotels = num_hotels + 1
+        WHERE id = NEW.hotel_chain_id;
+
+        RETURN NEW;
+    END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dec_num_hotels()
+   RETURNS TRIGGER AS $BODY$
+    BEGIN
+        UPDATE HotelChains
+        SET num_hotels = num_hotels - 1
+        WHERE id = OLD.hotel_chain_id;
+
+        RETURN OLD;
+    END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE TRIGGER inc_num_hotel
+AFTER INSERT ON Hotels
+FOR EACH ROW
+EXECUTE FUNCTION inc_num_hotels();
+
+CREATE TRIGGER dec_num_hotel
+AFTER DELETE ON Hotels
+FOR EACH ROW
+EXECUTE FUNCTION dec_num_hotels();
+
+
+CREATE TABLE IF NOT EXISTS Rooms (
     id SERIAL PRIMARY KEY,
     room_number INT NOT NULL,
     capacity INT NOT NULL CHECK (capacity > 0),
@@ -53,18 +88,17 @@ CREATE TABLE Rooms (
     CONSTRAINT fk_hotel
         FOREIGN KEY (hotel_id)
         REFERENCES Hotels(id)
-        ON DELETE CASCADE,
-
+        ON DELETE CASCADE
 ); -- done
 
-CREATE TABLE Customers (
+CREATE TABLE IF NOT EXISTS Customers (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
     address VARCHAR(200) NOT NULL,
     registration_date DATE NOT NULL
 ); -- done
 
-CREATE TABLE CustomerIdentification (
+CREATE TABLE IF NOT EXISTS CustomerIdentification (
     id SERIAL PRIMARY KEY,
     id_type VARCHAR(50) NOT NULL,
     content VARCHAR(50) NOT NULL,
@@ -75,7 +109,7 @@ CREATE TABLE CustomerIdentification (
         ON DELETE CASCADE
 ); -- done
 
-CREATE TABLE EmployeeIdentification (
+CREATE TABLE IF NOT EXISTS EmployeeIdentification (
     id SERIAL PRIMARY KEY,
     id_type VARCHAR(50) NOT NULL,
     content VARCHAR(50) NOT NULL,
@@ -86,7 +120,7 @@ CREATE TABLE EmployeeIdentification (
         ON DELETE CASCADE
 ); -- done
 
-CREATE TABLE Employees (
+CREATE TABLE IF NOT EXISTS Employees (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
     address VARCHAR(200) NOT NULL,
@@ -98,7 +132,7 @@ CREATE TABLE Employees (
         ON DELETE CASCADE
 ); -- done
 
-CREATE TABLE Rentings (
+CREATE TABLE IF NOT EXISTS Rentings (
     id SERIAL PRIMARY KEY,
     was_booked BOOLEAN NOT NULL,
     check_in_date DATE NOT NULL,
