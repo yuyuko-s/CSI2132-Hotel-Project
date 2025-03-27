@@ -171,3 +171,9 @@ SELECT h.id AS hotel_id, h.name AS hotel_name, SUM(r.capacity) AS total_capacity
 FROM Hotels h
 JOIN Rooms r ON h.id = r.hotel_id
 GROUP BY h.id;
+
+-- indexes
+
+-- this index is used a lot in aggregation
+-- and rooms are commonly searched
+CREATE INDEX rooms_capacity ON Rooms(capacity);
