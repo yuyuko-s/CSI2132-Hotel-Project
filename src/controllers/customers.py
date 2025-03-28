@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
-from src.database.database import db
+from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+
+db = SQLAlchemy()
 
 customers_bp = Blueprint('customers', __name__)
 
@@ -102,3 +106,9 @@ def delete_customer_identification(customer_id, id):
     query = "DELETE FROM CustomerIdentification WHERE id = %s AND customer_id = %s;"
     db.engine.execute(query, (id, customer_id))
     return jsonify({"message": "Customer identification deleted"}), 200
+
+class Customer(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String, nullable=False)
+    address = db.Column(db.String, nullable=False)
+    registration_date = db.Column(db.DateTime(timezone=True), default=func.now())

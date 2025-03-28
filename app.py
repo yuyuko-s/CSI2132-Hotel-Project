@@ -1,11 +1,16 @@
 
 from flask import Flask, render_template, request, flash, redirect, url_for
+import os
+from datetime import datetime
+from src.controllers.customers import db, Customer
+from src.controllers.rooms import db, Room
 
 from src.database.database import db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = \
-    'postgresql://admin:admin@localhost/hoteldb'
+    'postgresql://postgres:Stefzora003@localhost/CSI2132-Hotel-Project'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'super-secret-dev-key')
 
 db.init_app(app)
 
@@ -15,10 +20,6 @@ from src.controllers.hotel_chains import hotel_chains_bp
 from src.controllers.hotels import hotels_bp
 from src.controllers.rentings import rentings_bp
 from src.controllers.rooms import rooms_bp
-
-
-
-
 
 app.register_blueprint(hotel_chains_bp, url_prefix='/api')
 app.register_blueprint(hotels_bp, url_prefix='/api')
@@ -47,13 +48,20 @@ def sign_up():
             flash('Full name must be greater than 3 characters', category='error')
         elif len(address) < 6:
             flash('Must be a valid address', category='error')
+        elif not full_name or not address:
+            flash('Please enter all fields.', category='error')
         else:
-            new_customer = customers_bp(full_name = full_name, address=address, registration_date=registration_date)
+            new_customer = Customer(full_name = full_name, address=address)
             db.session.add(new_customer)
             db.session.commit()
             flash('New customer profile created successfully!', category='success')
     
-    return render_template("sign_up.html")
+    return render_template("customer-dashboard.html")
+
+@app.route('/customer-dashboard')
+def available_rooms():
+    rooms = Room.query.filter_by(is_available=True).all()
+    return render_template('customer-dashboard.html', rooms=rooms)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -50,6 +50,7 @@ CREATE TABLE Rooms (
     amenities VARCHAR(200) NOT NULL,
     problems VARCHAR(200),
     hotel_id INT NOT NULL,
+    is_available BOOLEAN DEFAULT TRUE
     CONSTRAINT fk_hotel
         FOREIGN KEY (hotel_id)
         REFERENCES Hotels(id)

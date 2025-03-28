@@ -19,9 +19,9 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark dg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <button
-        class="navar=toggler"
+        class="navbar-toggler"
         type="button"
         data-toggle="collapse"
         data-target="#navbar"
@@ -32,11 +32,38 @@
         <div class="navbar-nav">
           <a class="nav-item nav-link" id="home" href="/">Home</a>
           <a class="nav-item nav-link" id="employee-login" href="/employees">Employee login</a>
-          <a class="nav-item nav-link" id="customer-login" href="/">Customer login</a>
+          <a class="nav-item nav-link" id="customer-login" href="/sign_up">Customer login</a>
           <a class="nav-item nav-link" id="logout" href="/">Logout</a>
         </div>
       </div>
     </nav> 
+
+    {% with messages = get_flashed_messages(with_categories=true) %} 
+    {% if messages %}
+      {% for category, message in messages %}
+      {% if category == 'error' %}
+      <div class="alert alert-danger alert-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% else %}
+      <div class="alert alert-success alert-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+    </div>
 
     <script
     src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
@@ -49,4 +76,5 @@
     crossorigin="anonymous"
   ></script>
   </body>
+  
 </html>
