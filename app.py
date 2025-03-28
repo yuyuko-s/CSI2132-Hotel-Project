@@ -1,6 +1,7 @@
 
 from flask import Flask, render_template, request, flash, redirect, url_for
 import os
+from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime
 from src.controllers.customers import db, Customer
 from src.controllers.rooms import db, Room
@@ -36,6 +37,12 @@ def hello_world():  # put application's code here
 @app.route('/admin-dashboard')
 def admin_dashboard():
     return render_template("admin-dashboard.html")
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(for_url('/'))
 
 @app.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
