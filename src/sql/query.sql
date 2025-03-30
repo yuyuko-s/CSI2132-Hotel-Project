@@ -3,7 +3,8 @@ SELECT h.name AS hotel_name,
        COUNT(e.id) AS total_employees
 FROM Hotels h
 LEFT JOIN Employees e ON h.id = e.hotel_id
-GROUP BY h.name;
+GROUP BY h.name
+ORDER BY total_employees DESC;
 
 -- Get hotel with most customers
 SELECT h.name AS hotel_name,
@@ -26,7 +27,8 @@ HAVING COUNT(DISTINCT r.customer_id) = (
 SELECT e.id AS employee_id, e.full_name AS full_name, COUNT(DISTINCT r.id) AS customers_served
 FROM Employees e
 JOIN Rentings r ON e.id = r.employee_id
-GROUP BY e.id;
+GROUP BY e.id
+ORDER BY customers_served DESC;
 
 -- Get each hotel chain's average rating
 SELECT hc.name AS hotel_chain,

@@ -41,40 +41,6 @@ CREATE TABLE IF NOT EXISTS HotelContact (
         ON DELETE CASCADE
 ); -- done
 
-
-CREATE OR REPLACE FUNCTION inc_num_hotels()
-   RETURNS TRIGGER AS $BODY$
-    BEGIN
-        UPDATE HotelChains
-        SET num_hotels = num_hotels + 1
-        WHERE id = NEW.hotel_chain_id;
-
-        RETURN NEW;
-    END;
-$BODY$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION dec_num_hotels()
-   RETURNS TRIGGER AS $BODY$
-    BEGIN
-        UPDATE HotelChains
-        SET num_hotels = num_hotels - 1
-        WHERE id = OLD.hotel_chain_id;
-
-        RETURN OLD;
-    END;
-$BODY$ LANGUAGE plpgsql;
-
-CREATE TRIGGER inc_num_hotel
-AFTER INSERT ON Hotels
-FOR EACH ROW
-EXECUTE FUNCTION inc_num_hotels();
-
-CREATE TRIGGER dec_num_hotel
-AFTER DELETE ON Hotels
-FOR EACH ROW
-EXECUTE FUNCTION dec_num_hotels();
-
-
 CREATE TABLE IF NOT EXISTS Rooms (
     id SERIAL PRIMARY KEY,
     room_number INT NOT NULL,
@@ -157,16 +123,50 @@ CREATE TABLE IF NOT EXISTS Rentings (
         CHECK (check_in_date < check_out_date)
 );--done
 
+CREATE OR REPLACE FUNCTION inc_num_hotels()
+   RETURNS TRIGGER AS $BODY$
+    BEGIN
+        UPDATE HotelChains
+        SET num_hotels = num_hotels + 1
+        WHERE id = NEW.hotel_chain_id;
+
+        RETURN NEW;
+    END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dec_num_hotels()
+   RETURNS TRIGGER AS $BODY$
+    BEGIN
+        UPDATE HotelChains
+        SET num_hotels = num_hotels - 1
+        WHERE id = OLD.hotel_chain_id;
+
+        RETURN OLD;
+    END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER inc_num_hotel
+AFTER INSERT ON Hotels
+FOR EACH ROW
+EXECUTE FUNCTION inc_num_hotels();
+
+CREATE OR REPLACE TRIGGER dec_num_hotel
+AFTER DELETE ON Hotels
+FOR EACH ROW
+EXECUTE FUNCTION dec_num_hotels();
+
+
+
 -- View 1: Available rooms per area
 -- I'm using same hotel chain as the area
-CREATE VIEW available_rooms_per_chain AS
+CREATE OR REPLACE VIEW available_rooms_per_chain AS
 SELECT hc.name AS chain_name, COUNT(r.id) AS num_rooms FROM HotelChains hc
 JOIN Hotels h ON hc.id = h.hotel_chain_id
 JOIN Rooms r ON h.id = r.hotel_id
 GROUP BY hc.id;
 
 -- View 2: Aggregated capacity per hotel
-CREATE VIEW capacity_per_hotel AS
+CREATE OR REPLACE VIEW capacity_per_hotel AS
 SELECT h.id AS hotel_id, h.name AS hotel_name, SUM(r.capacity) AS total_capacity
 FROM Hotels h
 JOIN Rooms r ON h.id = r.hotel_id
@@ -176,8 +176,8 @@ GROUP BY h.id;
 
 -- this index is used a lot in aggregation
 -- and rooms are commonly searched
-CREATE INDEX rooms_capacity ON Rooms(capacity);
+CREATE INDEX IF NOT EXISTS rooms_capacity ON Rooms(capacity);
 
-CREATE INDEX room_id ON Rooms(id);
+CREATE INDEX IF NOT EXISTS room_id ON Rooms(id);
 
-CREATE INDEX hotel_id ON Hotels(id);
+CREATE INDEX IF NOT EXISTS hotel_id ON Hotels(id);
