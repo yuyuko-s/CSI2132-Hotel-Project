@@ -7,7 +7,7 @@
 nearly done
 
 
-2c: Queries
+2c: Queries [DONE]
 - 4 queries of your choice
 - 1 with aggregation
 - 1 with nested query

@@ -177,3 +177,7 @@ GROUP BY h.id;
 -- this index is used a lot in aggregation
 -- and rooms are commonly searched
 CREATE INDEX rooms_capacity ON Rooms(capacity);
+
+CREATE INDEX room_id ON Rooms(id);
+
+CREATE INDEX hotel_id ON Hotels(id);
