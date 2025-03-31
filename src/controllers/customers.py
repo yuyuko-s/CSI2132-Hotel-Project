@@ -62,11 +62,11 @@ def delete_customer(id):
 def create_customer_identification(customer_id):
     data = request.get_json()
     query = """
-        INSERT INTO CustomerIdentification (id_type, content, customer_id)
-        VALUES (%s, %s, %s)
+        INSERT INTO CustomerIdentification (id_type, content, customer_id, driver_license)
+        VALUES (%s, %s, %s, %s)
         RETURNING id;
     """
-    result = db.engine.execute(query, (data['id_type'], data['content'], customer_id))
+    result = db.engine.execute(query, (data['id_type'], data['content'], customer_id, data['driver_license']))
     identification_id = result.fetchone()[0]
     return jsonify({"message": "Customer identification created", "id": identification_id}), 201
 
@@ -112,3 +112,10 @@ class Customer(db.Model, UserMixin):
     full_name = db.Column(db.String, nullable=False)
     address = db.Column(db.String, nullable=False)
     registration_date = db.Column(db.DateTime(timezone=True), default=func.now())
+
+class Customeridentification(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    id_type = db.Column(db.String, nullable=False)
+    content = db.Column(db.String, nullable=False)
+    driver_license = db.Column(db.String, nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))

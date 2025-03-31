@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.database.database import db
+from src.controllers.hotel_chains import db, Hotelchains
 
 hotels_bp = Blueprint('hotels', __name__)
 
@@ -8,8 +9,8 @@ hotels_bp = Blueprint('hotels', __name__)
 def create_hotel():
     data = request.get_json()
     query = """
-        INSERT INTO Hotels (name, address, star_rating, hotel_chain_id)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO Hotels (name, address, star_rating, hotel_chain_id, city)
+        VALUES (%s, %s, %s, %s, %s)
         RETURNING id;
     """
     result = db.engine.execute(query, (data['name'], data['address'], data['star_rating'], data['hotel_chain_id']))
@@ -102,3 +103,11 @@ def delete_hotel_contact(hotel_id, id):
     query = "DELETE FROM HotelContact WHERE id = %s AND hotel_id = %s;"
     db.engine.execute(query, (id, hotel_id))
     return jsonify({"message": "Hotel contact deleted"}), 200
+
+class Hotels(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    address = db.Column(db.String(200))
+    star_rating = db.Column(db.Integer)
+    hotel_chain_id = db.Column(db.Integer, db.ForeignKey('hotelchains.id'), nullable=False)
+    city = db.Column(db.String(50))

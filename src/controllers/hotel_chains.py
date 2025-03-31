@@ -103,3 +103,8 @@ def delete_hotel_chain_contact(hotel_chain_id, id):
     query = "DELETE FROM HotelChainContact WHERE id = %s AND hotel_chain_id = %s;"
     db.engine.execute(query, (id, hotel_chain_id))
     return jsonify({"message": "Hotel chain contact deleted"}), 200
+
+class Hotelchains(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    office_address = db.Column(db.String(200))
