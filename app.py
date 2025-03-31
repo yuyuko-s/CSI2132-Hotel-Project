@@ -49,7 +49,7 @@ def load_user(user_id):
     return None
 
 @app.route('/')
-def hello_world():  # put application's code here
+def hello_world(): 
     return render_template("index.html")
 
 @app.route('/logout')
@@ -107,7 +107,6 @@ def customer_login():
             driver_license = request.form.get('driver_license_submit')
 
             identification = Customeridentification.query.filter_by(content=content, driver_license=driver_license).first()
-            print(identification)
             if identification:
                 login_user(LoginUser(identification.customer_id, 'customer'))
                 flash("Logged in successfully as customer.", category="success")
@@ -189,14 +188,39 @@ def customer_dashboard():
     # No filters submitted — just show dashboard with filter form
     return render_template("customer_dashboard.html")
 
-@app.route('/admin_dashboard')
+@app.route('/admin_dashboard', methods=['GET'])
 @login_required
 def admin_dashboard():
-    if current_user.role != 'employee':
-        flash('Unauthorized', category='error')
-        return redirect(url_for('employee_login'))
-    rooms = Room.query.all()
-    return render_template('admin_dashboard.html', rooms=rooms)
+    employee_id = current_user.id
+
+    chain_query = """
+        SELECT hc.id
+        FROM employees e
+        JOIN hotels h ON e.hotel_id = h.id
+        JOIN hotelchains hc ON h.hotel_chain_id = hc.id
+        WHERE e.id = %s
+    """
+    chain_result = db.engine.execute(chain_query, (employee_id,))
+    chain_row = chain_result.fetchone()
+
+    if not chain_row:
+        flash("Could not determine your hotel chain.", category="error")
+        return redirect(url_for("home"))
+
+    hotel_chain_id = chain_row[0]
+
+    rooms_query = """
+        SELECT r.id, r.room_number, r.capacity, r.price, r.is_extendable, r.view_types, r.amenities,
+               h.name AS hotel_name, h.star_rating
+        FROM rooms r
+        JOIN hotels h ON r.hotel_id = h.id
+        WHERE h.hotel_chain_id = %s
+    """
+    rooms_result = db.engine.execute(rooms_query, (hotel_chain_id,))
+    rooms = [dict(row) for row in rooms_result]
+
+    return render_template("admin_dashboard.html", rooms=rooms)
+
 
 @app.route('/results')
 @login_required
@@ -214,21 +238,71 @@ def checkout():
     flash("Please select a room first.", category="error")
     return redirect(url_for("customer_dashboard"))
 
+@app.route("/admin_results", methods=["GET", "POST"])
+@login_required
+def admin_results():
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'signup':
+            full_name = request.form.get('full_name')
+            address = request.form.get('address')
+            content = request.form.get('content')
+            driver_license = request.form.get('driver_license')
+            registration_date = datetime.utcnow()
+
+            existing_customer = Customer.query.filter_by(full_name=full_name, address=address).first()
+            if existing_customer:
+                flash('This customer already exists!', category='error')
+                return redirect(url_for('admin_results'))
+            else:
+                new_customer = Customer(full_name=full_name, address=address)
+                db.session.add(new_customer)
+                db.session.commit() 
+
+                new_customer_identification = Customeridentification(
+                    id_type='email',
+                    content=content,
+                    customer_id=new_customer.id,
+                    driver_license=driver_license
+                )
+                db.session.add(new_customer_identification)
+                db.session.commit()
+
+                flash('New customer registered successfully!', category='success')
+                return redirect(url_for('checkout'))
+    
+        elif action == 'login':
+            content = request.form.get('content_submit')
+            driver_license = request.form.get('driver_license_submit')
+
+            identification = Customeridentification.query.filter_by(content=content, driver_license=driver_license).first()
+            if identification:
+                flash("Customer successfully identified!", category="success")
+                customer_id = identification.customer_id
+                return redirect(url_for('checkout'))
+            else:
+                flash("Customer does not exist.", category="error")
+
+    return render_template("admin_results.html")
+
 @app.route("/confirm-booking", methods=["POST"])
 @login_required
 def confirm_booking():
     room_id = request.form.get("room_id")
-    customer_id = current_user.id
     check_in = request.form.get("check_in_date")
     check_out = request.form.get("check_out_date")
     credit_card = request.form.get("credit_card")
 
     if current_user != 'employee':
         employee_id = 0
+        customer_id = current_user.id
+    else:
+        employee_id = current_user.id
 
     # Validate dates
     if check_out <= check_in:
-        flash("Check-out must be after check-in.", "danger")
+        flash("Check-out must be after check-in", category="error")
         return redirect(url_for("checkout"))
 
     # Insert into Rentings table
@@ -239,7 +313,10 @@ def confirm_booking():
     db.engine.execute(query, (True, check_in, check_out, 'paid', customer_id, 1, employee_id))
 
     flash("Booking confirmed!", "success")
-    return redirect(url_for("customer_dashboard"))
+    if current_user != 'employee':
+        return redirect(url_for("customer_dashboard"))
+    else:
+        return redirect(url_for("admin_dashboard"))
 
 if __name__ == '__main__':
     app.run(debug=True)
