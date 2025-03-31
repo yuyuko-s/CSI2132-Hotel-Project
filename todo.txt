@@ -7,20 +7,22 @@
 nearly done
 
 
-2c: Queries
+2c: Queries [DONE]
 - 4 queries of your choice
 - 1 with aggregation
 - 1 with nested query
 
 2d: Database modifications
 - GET/DEL/PATCH for all data DONE
-- at least 2 triggers
+- at least 2 triggers DONE
+
+Trigger 1 & 2: Update numofhotels
 
 
 2e: Database indexes
 - At least 3 indexes
 - Justify how they are useful to accelerate querying
 
-2f: Database Views
+2f: Database Views [ DONE ]
 - View 1: Number of available rooms per area
 - View 2: Aggregated capacity of all the rooms of a hotel
