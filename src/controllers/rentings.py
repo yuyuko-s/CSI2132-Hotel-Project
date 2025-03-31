@@ -58,3 +58,13 @@ def delete_renting(id):
     query = "DELETE FROM Rentings WHERE id = %s;"
     db.engine.execute(query, (id,))
     return jsonify({"message": "Renting deleted"}), 200
+
+class Rentings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    was_booked = db.Column(db.Boolean)
+    check_in_date = db.Column(db.Date)
+    check_out_date = db.Column(db.Date)
+    payment_status = db.Column(db.String(50))
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'))
+    employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))

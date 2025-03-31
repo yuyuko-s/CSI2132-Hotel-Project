@@ -10,6 +10,7 @@ from src.controllers.rooms import db, Room
 from src.controllers.login_helpers import LoginUser
 from src.controllers.hotels import Hotels
 from src.controllers.hotel_chains import Hotelchains
+from src.controllers.rentings import Rentings
 
 from src.database.database import db
 
@@ -203,26 +204,42 @@ def results():
     rooms = Room.query.all()
     return render_template('results.html', rooms=rooms)
 
-@app.route('/book-room', methods=['POST'])
+@app.route("/checkout", methods=["GET", "POST"])
 @login_required
-def book_room():
-    room_id = request.form.get('room_id')
+def checkout():
+    if request.method == "POST":
+        room_id = request.form.get("room_id")
+        return render_template("checkout.html", room_id=room_id)
 
-    # Get the logged-in customer’s ID
+    flash("Please select a room first.", category="error")
+    return redirect(url_for("customer_dashboard"))
+
+@app.route("/confirm-booking", methods=["POST"])
+@login_required
+def confirm_booking():
+    room_id = request.form.get("room_id")
     customer_id = current_user.id
+    check_in = request.form.get("check_in_date")
+    check_out = request.form.get("check_out_date")
+    credit_card = request.form.get("credit_card")
 
-    # Simple placeholder booking (use real dates later if needed)
-    check_in = datetime.now().date()
-    check_out = check_in + timedelta(days=1)
+    if current_user != 'employee':
+        employee_id = 0
 
+    # Validate dates
+    if check_out <= check_in:
+        flash("Check-out must be after check-in.", "danger")
+        return redirect(url_for("checkout"))
+
+    # Insert into Rentings table
     query = """
-        INSERT INTO rentings (room_id, customer_id, check_in_date, check_out_date)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO Rentings (was_booked, check_in_date, check_out_date, payment_status, customer_id, room_id, employee_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
-    db.engine.execute(query, (room_id, customer_id, check_in, check_out))
+    db.engine.execute(query, (True, check_in, check_out, 'paid', customer_id, 1, employee_id))
 
-    flash("Room booked successfully!", "success")
-    return redirect(url_for('customer_dashboard'))
+    flash("Booking confirmed!", "success")
+    return redirect(url_for("customer_dashboard"))
 
 if __name__ == '__main__':
     app.run(debug=True)
