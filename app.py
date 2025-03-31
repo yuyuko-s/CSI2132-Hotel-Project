@@ -317,7 +317,7 @@ def confirm_booking():
         INSERT INTO Rentings (was_booked, check_in_date, check_out_date, payment_status, customer_id, room_id, employee_id)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
-    db.engine.execute(query, (True, check_in, check_out, 'paid', customer_id, 1, employee_id))
+    db.engine.execute(query, (True, check_in, check_out, 'paid', customer_id, room_id, employee_id))
 
     flash("Booking confirmed!", "success")
     if current_user != 'employee':
