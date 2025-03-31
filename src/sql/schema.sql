@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS Rooms (
     amenities VARCHAR(200) NOT NULL,
     problems VARCHAR(200),
     hotel_id INT NOT NULL,
+    is_available BOOLEAN DEFAULT TRUE
     CONSTRAINT fk_hotel
         FOREIGN KEY (hotel_id)
         REFERENCES Hotels(id)
@@ -69,6 +70,7 @@ CREATE TABLE IF NOT EXISTS CustomerIdentification (
     id_type VARCHAR(50) NOT NULL,
     content VARCHAR(50) NOT NULL,
     customer_id INTEGER NOT NULL,
+    driver_license VARCHAR(15) NOT NULL,
     CONSTRAINT fk_customer
         FOREIGN KEY (customer_id)
         REFERENCES Customers(id)

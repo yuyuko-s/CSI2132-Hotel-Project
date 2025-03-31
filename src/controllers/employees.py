@@ -1,5 +1,10 @@
 from flask import Blueprint, request, jsonify
-from src.database.database import db
+#from src.database.database import db
+from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+
+db = SQLAlchemy()
 
 employees_bp = Blueprint('employees', __name__)
 
@@ -105,3 +110,17 @@ def delete_employee_identification(employee_id, id):
     query = "DELETE FROM EmployeeIdentification WHERE id = %s AND employee_id = %s;"
     db.engine.execute(query, (id, employee_id))
     return jsonify({"message": "Employee identification deleted"}), 200
+
+class Employees(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String, nullable=False)
+    address = db.Column(db.String, nullable=False)
+    role = db.Column(db.String, nullable=False)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id'))
+
+class Employeeidentification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_type = db.Column(db.String, nullable=False)
+    content = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))

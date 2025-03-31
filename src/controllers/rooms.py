@@ -1,8 +1,10 @@
 import sys
 from flask import Blueprint, request, jsonify
 from src.database.database import db
+from flask_sqlalchemy import SQLAlchemy
 
 rooms_bp = Blueprint('rooms', __name__)
+db = SQLAlchemy()
 
 # Create a new room
 @rooms_bp.route('/rooms', methods=['POST'])
@@ -76,8 +78,19 @@ def get_available_rooms():
         WHERE hotel_id IN (SELECT id FROM Hotels WHERE destination ILIKE %s)
         AND capacity >= %s AND id NOT IN (SELECT room_id FROM Rentings WHERE check_in_date <= %s AND check_out_date >= %s);
     """
-    result = db.engine.execute(query, (destination, capacity, check_in, check_out))
+    result = db.engine.execute(query, (f"%{destination}%", capacity, check_in, check_out))
     rooms = [dict(row) for row in result]
     return jsonify(rooms), 200
 
-    
+class Room(db.Model):
+    __tablename__ = 'rooms'
+    id = db.Column(db.Integer, primary_key=True)
+    room_number = db.Column(db.Integer, nullable=False)
+    capacity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    is_extendable = db.Column(db.Boolean, nullable=False)
+    view_types = db.Column(db.String(100))
+    amenities = db.Column(db.String(200), nullable=False)
+    problems = db.Column(db.String(200))
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotels.id', ondelete='CASCADE'), nullable=False)
+    is_available = db.Column(db.Boolean, default=True)
