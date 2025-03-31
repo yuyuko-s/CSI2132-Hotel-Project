@@ -57,7 +57,7 @@ def hello_world():
 def logout():
     logout_user()
     flash('You have successfully been logged out.', category='success')
-    return redirect(url_for('/'))
+    return render_template("index.html")
 
 @app.route('/customer_login', methods=['GET', 'POST'])
 def customer_login():
@@ -165,8 +165,10 @@ def customer_dashboard():
             params.extend(city_ids)
 
         if view_types:
-            query += f" AND r.view_types IN ({','.join(['%s'] * len(view_types))})"
+            placeholders = ','.join(['%s'] * len(view_types))
+            query += f" AND (r.view_types IN ({placeholders}) OR r.view_types = 'None')"
             params.extend(view_types)
+
 
         if star_rating:
             query += " AND h.star_rating >= %s"
@@ -241,6 +243,9 @@ def checkout():
 @app.route("/admin_results", methods=["GET", "POST"])
 @login_required
 def admin_results():
+    room_id = request.form.get('room_id')
+
+    print(room_id)
     if request.method == 'POST':
         action = request.form.get('action')
 
@@ -286,13 +291,15 @@ def admin_results():
 
     return render_template("admin_results.html")
 
-@app.route("/confirm-booking", methods=["POST"])
+@app.route("/confirm_booking", methods=["GET", "POST"])
 @login_required
 def confirm_booking():
     room_id = request.form.get("room_id")
     check_in = request.form.get("check_in_date")
     check_out = request.form.get("check_out_date")
     credit_card = request.form.get("credit_card")
+
+    print(current_user)
 
     if current_user != 'employee':
         employee_id = 0

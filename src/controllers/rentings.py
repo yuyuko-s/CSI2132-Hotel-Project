@@ -66,5 +66,5 @@ class Rentings(db.Model):
     check_out_date = db.Column(db.Date)
     payment_status = db.Column(db.String(50))
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
-    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'))
+    rooms_id = db.Column(db.Integer, db.ForeignKey('rooms.id'))
     employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))

@@ -52,7 +52,10 @@
 
   <br />
 
-  <button type="submit" class="btn btn-success" name="action" value="signup">Register Customer</button>
+  <form method="POST" action="{{ url_for('checkout') }}">
+    <input type="hidden" name="room_id" value="{{ room_id }}">
+    <button type="submit" class="btn btn-success" name="action" value="signup">Register Customer</button>
+  </form>
 
   <h3>Customer Lookup</h3>
   <div class="form-group">
@@ -79,7 +82,10 @@
 
   <br />
 
-  <button type="submit" class="btn btn-primary" name="action" value="login">Lookup</button>
+  <form method="POST" action="{{ url_for('checkout') }}">
+    <input type="hidden" name="room_id" value="{{ room_id }}">
+    <button type="submit" class="btn btn-primary" name="action" value="login">Lookup</button>
+  </form>
 
 </form>
 

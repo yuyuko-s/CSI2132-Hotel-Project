@@ -16,17 +16,6 @@ CREATE TABLE HotelChainContact (
         ON DELETE CASCADE
 ); -- done
 
-CREATE TABLE HotelContact (
-    id SERIAL PRIMARY KEY,
-    hotel_id INT NOT NULL,
-    type VARCHAR(20) NOT NULL,
-    content VARCHAR(100) NOT NULL,
-    CONSTRAINT fk_hotel
-        FOREIGN KEY (hotel_id)
-        REFERENCES Hotels(id)
-        ON DELETE CASCADE
-); -- done
-
 CREATE TABLE Hotels (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -36,6 +25,17 @@ CREATE TABLE Hotels (
     CONSTRAINT fk_hotel_chain
         FOREIGN KEY (hotel_chain_id)
         REFERENCES HotelChains(id)
+        ON DELETE CASCADE
+); -- done
+
+CREATE TABLE HotelContact (
+    id SERIAL PRIMARY KEY,
+    hotel_id INT NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    content VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_hotel
+        FOREIGN KEY (hotel_id)
+        REFERENCES Hotels(id)
         ON DELETE CASCADE
 ); -- done
 
@@ -70,6 +70,7 @@ CREATE TABLE CustomerIdentification (
     id_type VARCHAR(50) NOT NULL,
     content VARCHAR(50) NOT NULL,
     customer_id INTEGER NOT NULL,
+    driver_license VARCHAR(15) NOT NULL,
     CONSTRAINT fk_customer
         FOREIGN KEY (customer_id)
         REFERENCES Customers(id)
